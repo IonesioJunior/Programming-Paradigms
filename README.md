@@ -9,7 +9,7 @@
 ```
 -  Imperative Paradigm (using C)
 -  Logic Paradigm (using Prolog)
--  Functional Paradigm (using Haskel)
+-  Functional Paradigm (using Haskell)
 -  Concurrent Paradigm
 
 ```

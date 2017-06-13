@@ -108,18 +108,30 @@ int displayMenu(){
 
 //Show map(players) without ship positions
 void showMaskedMap(int **mat,int rows,int cols){
+	printf("  | ");
+	//Desenhar Valores das colunas como coordenadas
+	for(int i = 0 ; i < rows;i++){
+		printf("%d    ",i);
+	}
+	printf("\n");
+	printf("  ");
 	for(int i = 0; i < rows;i++){
+		printf("-----");
+	}
+	printf("\n");
+	for(int i = 0; i < rows;i++){
+		printf("%d | ",i);
 		for(int j = 0; j < cols;j++){
 			if(mat[i][j] == -5){
-				printf("X ");
+				printf("X    ");
 			}else if(mat[i][j] == -1){
-				printf("1 ");
+				printf("1    ");
 			}else if(mat[i][j] == -2){
-				printf("2 ");
+				printf("2    ");
 			}else if(mat[i][j] == -3){
-				printf("3 ");
+				printf("3    ");
 			}else{
-				printf("0 ");
+				printf("0    ");
 			}
 		}
 		printf("\n");
@@ -154,7 +166,7 @@ int main(){
 			printf("Your Score: %d\n",hits);
 			break;
 		}
-		printf("=== M A P ===\n\n");
+		printf("     		  === M A P ===\n\n");
 		showMaskedMap(mat,9,9);
 	}
 	if(hits < 12){

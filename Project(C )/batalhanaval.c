@@ -156,7 +156,7 @@ int main(){
 	int hits = 0;
 	showMaskedMap(mat,9,9);
 	while(shots){
-		printf("Onde deseja atirar?\n");
+		printf("Onde deseja disparar?\n");
 		int x;
 		int y;
 		scanf("%d %d",&x,&y);

@@ -5,15 +5,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-//Build matrix using dynamic memory allocation
-int** buildMatrix(int rows,int cols){
-	int** mat = (int**) calloc(rows,sizeof(int*));
-	for(int i = 0 ; i < rows;i++){
-		mat[i] = (int*) calloc(cols,sizeof(int));
-	}
-	return mat;
-}
-
 //Show Real Matrix map with boats position(debug)
 void showRealMap(int** mat,int rows,int cols){
 	for(int i = 0 ; i < rows;i++){

@@ -95,8 +95,13 @@ int** initializeGame(int rows,int cols){
 //Show legends of game and get number of shots
 int displayMenu(){
 	printf("======= Batalha Naval ========\n");
-	printf("O - Desconhecido\nX - Miss\n1 - Battleship\n2 - Cruiser\n3 - Minesweeper\n\n");
+	printf("O - Desconhecido\n");
+	printf("X - Miss\n");
+	printf("1 - Battleship\n");
+	printf("2 - Cruiser\n");
+	printf("3 - Minesweeper\n\n");
 	printf("Quantos disparos deseja?\n");
+	
 	int shots;
 	scanf("%d",&shots);
 	return shots;

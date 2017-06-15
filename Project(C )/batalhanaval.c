@@ -96,11 +96,11 @@ int** initializeGame(int rows,int cols){
 int displayMenu(){
 	printf("======= Batalha Naval ========\n");
 	printf("O - Desconhecido\n");
-	printf("X - Miss\n");
+	printf("X - Erro\n");
 	printf("1 - Battleship\n");
 	printf("2 - Cruiser\n");
 	printf("3 - Minesweeper\n\n");
-	printf("Quantos disparos deseja?\n");
+	printf("Quantos disparos deseja ter?\n");
 	
 	int shots;
 	scanf("%d",&shots);

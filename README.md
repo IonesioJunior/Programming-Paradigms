@@ -21,4 +21,4 @@
 
 * **Ionésio Junior**
 * **Wesley Anibal**
-***Agnaldo Junior**
+* **Agnaldo Junior**

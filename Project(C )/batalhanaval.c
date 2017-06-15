@@ -163,7 +163,7 @@ int main(){
 		tryShot(x,y,mat,&hits);
 		shots--;
 		if(hits == 12){
-			printf(" ============== You Win!!! ============= \n");
+			printf(" ============== You Win!!! ============== \n");
 			printf("Your Score: %d\n",hits);
 			break;
 		}

@@ -24,6 +24,15 @@ void showRealMap(int** mat,int rows,int cols){
 	}
 }
 
+//Get some random coordenate to position the boats
+int* getCoordenates(int sizeofBoat,int n){
+	int limit = n - sizeofBoat;
+	int* coord = (int*) calloc(2,sizeof(int));
+	coord[0] = rand() % limit;
+	coord[1] = rand() % limit;
+	return coord;
+}
+
 //Build Battle ship in matrix
 void BattleShipPosition(int n,int** mat){
 	int* coord = getCoordenates(4,n);

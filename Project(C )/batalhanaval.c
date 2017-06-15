@@ -24,7 +24,7 @@ void showRealMap(int** mat,int rows,int cols){
 	}
 }
 
-//Get some random coordenate to position the boats
+//Get some random coordinate to position the boats
 int* getCoordenates(int sizeofBoat,int n){
 	int limit = n - sizeofBoat;
 	int* coord = (int*) calloc(2,sizeof(int));
@@ -92,7 +92,7 @@ int** initializeGame(int rows,int cols){
 	return mat;
 }
 
-//Show Legends of game and get number os shots
+//Show legends of game and get number of shots
 int displayMenu(){
 	printf("======= Batalha Naval ========\n");
 	printf("O - Desconhecido\n");

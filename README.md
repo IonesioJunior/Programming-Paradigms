@@ -20,3 +20,4 @@
 ## Authors
 
 * **Ionésio Junior**
+* **Wesley Anibal**

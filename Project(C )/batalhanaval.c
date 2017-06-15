@@ -29,7 +29,6 @@ int* getCoordenates(int sizeofBoat,int n){
 	int limit = n - sizeofBoat;
 	int* coord = (int*) calloc(2,sizeof(int));
 	coord[0] = rand() % limit;
-	coord[1] = rand() % limit;
 	return coord;
 }
 

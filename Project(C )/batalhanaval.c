@@ -91,6 +91,7 @@ int** initializeGame(int rows,int cols){
 	}
 	return mat;
 }
+
 //Show Legends of game and get number os shots
 int displayMenu(){
 	printf("======= Batalha Naval ========\n");
@@ -170,7 +171,7 @@ int main(){
 		showMaskedMap(mat,9,9);
 	}
 	if(hits < 12){
-		printf(" ================= Game Over ==================== \n");
+		printf(" ================= Game Over ================== \n");
 		printf("Your Score: %d\n",hits);
 	}
 	return 0;

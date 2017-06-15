@@ -14,6 +14,7 @@ int** buildMatrix(int rows,int cols){
 	return mat;
 }
 
+
 //Show Real Matrix map with boats position(debug)
 void showRealMap(int** mat,int rows,int cols){
 	for(int i = 0 ; i < rows;i++){

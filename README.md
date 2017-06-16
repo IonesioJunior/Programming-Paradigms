@@ -22,3 +22,5 @@
 * **Ionésio Junior**
 * **Wesley Anibal**
 * **Agnaldo Junior**
+* **Rubens Batista**
+* **Dayvson Weslley**

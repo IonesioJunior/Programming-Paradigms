@@ -1,6 +1,11 @@
 /*
 * @author Ionésio Junior
+	  Rubens B Batista
+	  Wesley Anibal
+	  Dayvson Nascimento
+	  Agnaldo
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -152,6 +157,7 @@ void tryShot(int x,int y,int** mat,int* hits){
 		mat[y][x] = -5;
 	}
 }
+
 
 int main(){
 	srand(time(NULL));

@@ -135,11 +135,12 @@ void showMaskedMap(int **mat,int rows,int cols){
 			}else if(mat[i][j] == -3){
 				printf("3    ");
 			}else{
-				printf("0    ");
+				printf("~    ");
 			}
 		}
 		printf("\n");
 	}
+	printf("\n");
 }
 
 //Try shot in specific coordinates
@@ -171,7 +172,7 @@ int main(){
 			printf("Your Score: %d\n",hits);
 			break;
 		}
-		printf("     		  === M A P ===\n\n");
+		printf("     		  === BATALHA NAVAL ===\n\n");
 		showMaskedMap(mat,9,9);
 	}
 	if(hits < 12){

@@ -93,7 +93,7 @@ int** initializeGame(int rows,int cols){
 }
 
 //Show legends of game and get number of shots
-int displayMenu(){
+void displayMenu(){
 	printf("======= Batalha Naval ========\n");
 	printf("O - Desconhecido\n");
 	printf("X - Erro\n");
@@ -102,10 +102,13 @@ int displayMenu(){
 	printf("3 - Minesweeper\n\n");
 	printf("Quantos disparos deseja ter?\n");
 	
+}
+int getShots(){
 	int shots;
 	scanf("%d",&shots);
 	return shots;
 }
+
 
 //Show map(players) without ship positions
 void showMaskedMap(int **mat,int rows,int cols){
@@ -151,7 +154,8 @@ void tryShot(int x,int y,int** mat,int* hits){
 
 int main(){
 	srand(time(NULL));
-	int shots = displayMenu();
+	displayMenu();
+	int shots = getShots();
 	int** mat = initializeGame(9,9);
 	int hits = 0;
 	showMaskedMap(mat,9,9);

@@ -1,16 +1,19 @@
-import Control.Monad
-result :: Int -> Int  -> Int -> String
-result ideal height  atual | ideal == atual = "OK"
-			   | abs(ideal - atual) < abs(ideal - height) = "ADEQUADO"
-			   | otherwise = "PERIGO"
-main = do 
-	ideal <- getLine
-	height <- getLine
-	let distance = read height
-	let loop = do
-		atual <- getLine
-		putStrLn (result (read ideal) (read distance) (read atual))
-		let distance = read atual
-		when (ideal /= atual) loop
-	loop
-	
+import Data.List
+import System.IO
+
+aviao :: Int -> Int -> IO()
+aviao adequado inicial = do
+  z <- getLine
+  let atual = read z
+  if (inicial == adequado) || (atual == adequado) then putStrLn "OK"
+    else if (abs(adequado - inicial)) > (abs(adequado - atual)) then do putStrLn "ADEQUADO"
+                                                                        aviao adequado atual
+      else do putStrLn "PERIGO"
+              aviao adequado atual
+
+main = do
+  x <- getLine
+  y <- getLine
+  let adequado = read x
+  let anterior = read y
+  aviao adequado anterior

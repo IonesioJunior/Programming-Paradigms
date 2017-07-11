@@ -3,10 +3,10 @@
  --- BattleShip ---
 
 authors : Ionésio Junior
-   	  		Wesley Anibal
-				 	Agnaldo Junior
-				  Rubens Batista
-				 	Dayvson Weslley
+   	  Wesley Anibal
+	  Agnaldo Junior
+	  Rubens Batista
+	  Dayvson Weslley
 
 -}
 

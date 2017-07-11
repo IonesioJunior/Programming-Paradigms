@@ -3,10 +3,10 @@
  --- BattleShip ---
 
 authors : Ionésio Junior
-   	  Wesley Anibal
-	  Agnaldo Junior
-	  Rubens Batista
-	  Davyson Weslley
+   	  		Wesley Anibal
+				 	Agnaldo Junior
+				  Rubens Batista
+				 	Dayvson Weslley
 
 -}
 
@@ -37,5 +37,15 @@ generateBattleShipsCoords randomCoord = do
 coords = generateBattleShipsCoords (generateRandomCoords 0 5)
 
 
+displayMenu :: IO()
+displayMenu = putStrLn("======= Batalha Naval ========\n"++
+  "O - Desconhecido\n"++
+	"X - Erro\n"++
+	"1 - Battleship\n"++
+	"2 - Cruiser\n"++
+	"3 - Minesweeper\n\n"++
+	"Quantos disparos deseja ter?\n")
+
 main = do
-	  print $ coords
+		displayMenu
+		print $ coords

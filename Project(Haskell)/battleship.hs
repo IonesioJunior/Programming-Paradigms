@@ -14,45 +14,10 @@ import System.IO.Unsafe
 import System.Random
 import Control.Monad
 
+-- static random coords format [ [battleship],[cruiser],[cruiser],[mines],[mines],[mines],[mines] ]
+coords = generateBattleShipsCoords (generateRandomCoords 0 5)
 
--- Build Matrix with value and position of the hiden ships
-buildMat :: Int -> Int -> [[(Int,Int)]] -> [[Int]]
-buildMat n m coords = [     [ 0 | x <- [1,2 .. n] ]     |   y <- [1,2 .. m]       ]
-
-
-replace p f xs = [ if i == p then f x else x | (x, i) <- zip xs [0..] ]
-replace2D v (x,y) = replace y (replace x (const v))
-
-containsShip :: [[Int]] -> (Int,Int) -> [[Int]]
-containsShip m coord_shot | containsBattleShip (coords !! 0) coord_shot = replace2D 1 coord_shot m
-			  | containsCruiser [coords !! 1 , coords !! 2] coord_shot = replace2D 2 coord_shot m
-			  | containsMineswepper [coords !! 3, coords !! 4, coords !! 5, coords !! 6] coord_shot = replace2D 3 coord_shot m
-			  | otherwise = m
-
-containsBattleShip :: [(Int,Int)] -> (Int,Int) -> Bool
-containsBattleShip ships tuple = elem tuple ships
-
-containsCruiser :: [[(Int,Int)]] -> (Int,Int) -> Bool
-containsCruiser cruiser_coords coord_shot | elem coord_shot (cruiser_coords !! 0) =  True
-					  | elem coord_shot (cruiser_coords !! 1) = True
-					  | otherwise = False					
-
-
-containsMineswepper :: [[(Int,Int)]] -> (Int,Int) -> Bool
-containsMineswepper ships_coords coord_shot | elem [coord_shot] ships_coords = True
-					    | otherwise = False
-
-
---show matrix to player
-showMat :: [[Int]] -> String
-showMat m  = concat (concat [ [ mapMat y | y <- x] ++ ["\n"] | x <- m])
-
-mapMat :: Int -> String
-mapMat value | (value == 1) = "1 "
-	           | (value == 2) = "2 "
-	           | (value == 3) = "3 "
-	           | (value == 5) = "X "
-             	   | otherwise = "~ "
+-----------------------------------------------------	Build Functions    ----------------------------------------------------------------------
 
 --Generate random coords for first position of ships
 generateRandomCoords :: Int -> Int -> [(Int,Int)]
@@ -70,14 +35,65 @@ generateBattleShipsCoords randomCoord = do
 					  [battleship] ++ cruiser ++ [ [(x,y)] | (x,y) <- [randomCoord !! i | i <- [3,4 .. 6]]]
 
 
+-- Build Matrix with value and position of the hiden ships
+buildMat :: Int -> Int -> [[(Int,Int)]] -> [[Int]]
+buildMat n m coords = [     [ 0 | x <- [1,2 .. n] ]     |   y <- [1,2 .. m]       ]
+
+
+
+
+--------------------------------------------------------- 	Update Matrix	--------------------------------------------------------------------
+
+containsShip :: [[Int]] -> (Int,Int) -> [[Int]]
+containsShip m coord_shot | containsBattleShip (coords !! 0) coord_shot = replace2D 1 coord_shot m
+			  | containsCruiser [coords !! 1 , coords !! 2] coord_shot = replace2D 2 coord_shot m
+			  | containsMineswepper [coords !! 3, coords !! 4, coords !! 5, coords !! 6] coord_shot = replace2D 3 coord_shot m
+			  | otherwise = replace2D 5 coord_shot m
+
+containsBattleShip :: [(Int,Int)] -> (Int,Int) -> Bool
+containsBattleShip ships tuple = elem tuple ships
+
+containsCruiser :: [[(Int,Int)]] -> (Int,Int) -> Bool
+containsCruiser cruiser_coords coord_shot | elem coord_shot (cruiser_coords !! 0) =  True
+					  | elem coord_shot (cruiser_coords !! 1) = True
+					  | otherwise = False					
+
+
+containsMineswepper :: [[(Int,Int)]] -> (Int,Int) -> Bool
+containsMineswepper ships_coords coord_shot | elem [coord_shot] ships_coords = True
+					    | otherwise = False
+
+
+
+
+----------------------------------------------	Auxiliar Functions	---------------------------------------------------------------------------
+
+replace p f xs = [ if i == p then f x else x | (x, i) <- zip xs [0..] ]
+-- replace y element in (x,y) coordinate of matrix
+replace2D v (x,y) = replace y (replace x (const v))
+
+-- Increase hit value if shot equals of some coordinate in ship coords
 increaseAcc :: Int -> (Int,Int) -> [[(Int,Int)]] -> Int
 increaseAcc hit shot_coord coords | containsBattleShip (coords !! 0) shot_coord  = hit + 1
 				  | containsCruiser [coords !! 1, coords !! 2] shot_coord  = hit + 1
 				  | containsMineswepper [coords !! 3 , coords !! 4 ,  coords !! 5 , coords !! 6] shot_coord = hit + 1
 				  | otherwise = hit
 
--- static value
-coords = generateBattleShipsCoords (generateRandomCoords 0 5)
+
+
+-------------------------------------------------------------------	IOFunctions	-----------------------------------------------------------
+
+
+--show matrix to player
+showMat :: [[Int]] -> String
+showMat m  = concat (concat [ [ mapMat y | y <- x] ++ ["\n"] | x <- m])
+
+mapMat :: Int -> String
+mapMat value | (value == 1) = "1 "
+	           | (value == 2) = "2 "
+	           | (value == 3) = "3 "
+	           | (value == 5) = "X "
+             	   | otherwise = "~ "
 
 
 --Show simple legends

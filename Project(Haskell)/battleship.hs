@@ -19,28 +19,28 @@ import Control.Monad
 buildMat :: Int -> Int -> [[(Int,Int)]] -> [[Int]]
 buildMat n m coords = [     [ 0 | x <- [1,2 .. n] ]     |   y <- [1,2 .. m]       ]
 
-containsBattleShip :: (Int, Int) -> [(Int, Int)] -> Bool
-containsBattleShip tupla coords1 | (coords1 !! 0) == tupla = True
-                                | (coords1 !! 1) == tupla = True
-                                | (coords1 !! 2) == tupla = True
-                                | (coords1 !! 3) == tupla = True
-                                | otherwise = False
 
-fillMat :: Int -> Int -> [(Int, Int)] -> Int
-fillMat x y coords | containsBattleShip (x,y) (coords !! 0) = 1
-                   | containsCruiser (x,y) (coords !! 1) (coords !! 2) = 2
-                   | containsMinesweeper (x,y) (coords !! 3) (coords !! 4) (coords !! 5) (coords !! 6) = 3
-                   | otherwise = 5
+replace p f xs = [ if i == p then f x else x | (x, i) <- zip xs [0..] ]
+replace2D v (x,y) = replace y (replace x (const v))
+
+containsShip :: [[Int]] -> (Int,Int) -> [[Int]]
+containsShip m coord_shot | containsBattleShip (coords !! 0) coord_shot = replace2D 1 coord_shot m
+			  | containsCruiser [coords !! 1 , coords !! 2] coord_shot = replace2D 2 coord_shot m
+			  | containsMineswepper [coords !! 3, coords !! 4, coords !! 5, coords !! 6] coord_shot = replace2D 3 coord_shot m
+			  | otherwise = m
+
+containsBattleShip :: [(Int,Int)] -> (Int,Int) -> Bool
+containsBattleShip ships tuple = elem tuple ships
+
+containsCruiser :: [[(Int,Int)]] -> (Int,Int) -> Bool
+containsCruiser cruiser_coords coord_shot | elem coord_shot (cruiser_coords !! 0) =  True
+					  | elem coord_shot (cruiser_coords !! 1) = True
+					  | otherwise = False					
 
 
-containsCruiser :: (Int,Int) -> [(Int,Int)] -> [(Int, Int)] -> Bool
-containsCruiser tupla coords1 coords2 | (coords1 !! 0) == tupla || (coords2 !! 0 ) == tupla = True
-                                      | (coords1 !! 1) == tupla || (coords2 !! 1 ) == tupla = True
-                                      | otherwise = False
-
-containsMinesweeper :: (Int,Int) -> [(Int,Int)] -> [(Int, Int)] -> [(Int, Int)] -> [(Int, Int)] -> Bool
-containsMinesweeper tupla coords1 coords2 coords3 coords4 | (coords1 !! 0) == tupla || (coords2 !! 0 ) == tupla || (coords3 !! 0) == tupla || (coords4 !! 0 ) == tupla = True
-                                                          | otherwise = False
+containsMineswepper :: [[(Int,Int)]] -> (Int,Int) -> Bool
+containsMineswepper ships_coords coord_shot | elem [coord_shot] ships_coords = True
+					    | otherwise = False
 
 
 --show matrix to player
@@ -52,7 +52,7 @@ mapMat value | (value == 1) = "1 "
 	           | (value == 2) = "2 "
 	           | (value == 3) = "3 "
 	           | (value == 5) = "X "
-             | otherwise = "~ "
+             	   | otherwise = "~ "
 
 --Generate random coords for first position of ships
 generateRandomCoords :: Int -> Int -> [(Int,Int)]
@@ -69,6 +69,12 @@ generateBattleShipsCoords randomCoord = do
 					  let cruiser = cruiserCoords $ [  (x,y + k)  | (x,y) <- [ randomCoord !! i | i <- [1,2] ] , k <- [0,1]  ]
 					  [battleship] ++ cruiser ++ [ [(x,y)] | (x,y) <- [randomCoord !! i | i <- [3,4 .. 6]]]
 
+
+increaseAcc :: Int -> (Int,Int) -> [[(Int,Int)]] -> Int
+increaseAcc hit shot_coord coords | containsBattleShip (coords !! 0) shot_coord  = hit + 1
+				  | containsCruiser [coords !! 1, coords !! 2] shot_coord  = hit + 1
+				  | containsMineswepper [coords !! 3 , coords !! 4 ,  coords !! 5 , coords !! 6] shot_coord = hit + 1
+				  | otherwise = hit
 
 -- static value
 coords = generateBattleShipsCoords (generateRandomCoords 0 5)
@@ -88,23 +94,24 @@ displayMenu = putStrLn("======= Batalha Naval ========\n"++
 loop :: [[Int]] -> Int -> Int -> Int -> IO()
 loop matrix shots fired hit | (shots == fired)  = putStrLn $ (getResult hit)
 		                        | otherwise = do
-						                                  putStrLn(" ========  BattleShip  ======== \n\n")
-						                                  putStrLn $ showMat $ matrix
-						                                  putStrLn(" Onde deseja atirar? \n")
-						                                  shot <- getLine
-						                                  loop matrix shots (fired + 1) hit
+	  		                                  putStrLn(" ========  BattleShip  ======== \n\n")
+			                                  putStrLn $ showMat $ matrix
+			                                  putStrLn(" Onde deseja atirar? \n")
+			                                  shot <- getLine
+							  let coordinates = (map read $ words shot :: [Int])
+			                                  loop (containsShip matrix ( (coordinates !!  0),(coordinates !! 1) ) ) shots (fired + 1) (increaseAcc hit (coordinates !! 0,coordinates !! 1) coords)
 
 
 
 --Define if you win or loose
 getResult :: Int -> String
 getResult hit | (hit == 12) = "You Win!\n"
-	      | otherwise = "You Lose!\n"
-
+	      | otherwise = "You Lose!\n You hit only " ++ show hit ++ " ships!!\n"
 
 main = do
 	   displayMenu
 	   input <- getLine
+	   putStrLn(show $ coords)
 	   let shots = (map read $ words input :: [Int])
 	   let matrix = buildMat 9 9 coords
 	   loop matrix (shots !! 0) 0 0

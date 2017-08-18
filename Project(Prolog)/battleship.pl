@@ -15,6 +15,24 @@ inserirNavios(Tabuleiro, NovoTabuleiro):-
 	insertMinesweeper(Tabuleiro5, Tabuleiro6),
 	insertMinesweeper(Tabuleiro6, Tabuleiro7),
 	insertMinesweeper(Tabuleiro7, NovoTabuleiro).
+atirar(Tabuleiro, NovoTabuleiro) :-
+  selecione,
+  inserir_numero('Linha', Linha),
+  inserir_numero('Coluna', Coluna), nl,
+  (Linha >= 0, Linha =< 8, Coluna >= 0, Coluna =< 8 ->
+    encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, Simbolo),
+    (
+    (Simbolo == ~) -> alteraValorNoTabuleiro(Tabuleiro, Linha, Coluna, @, NovoTabuleiro), errou, nl;
+    (Simbolo == n) -> alteraValorNoTabuleiro(Tabuleiro, Linha, Coluna, x, NovoTabuleiro), acertou, nl;
+    (Simbolo == @) -> invalido, atirar(Tabuleiro, NovoTabuleiro);
+    (Simbolo == x) -> invalido, atirar(Tabuleiro, NovoTabuleiro)
+    );
+  selecaoInvalida, atirar(Tabuleiro, NovoTabuleiro)
+  ).
+
+ alteraValorNoTabuleiro([H|T], 0, Coluna, NovoValor, [J|T]) :- substituir(H, Coluna, NovoValor, J).
+ alteraValorNoTabuleiro([H|T], Linha, Coluna, NovoValor, [H|U]) :-
+   Linha1 is Linha - 1, alteraValorNoTabuleiro(T, Linha1, Coluna, NovoValor, U).
 
 /* Execução da lógica sequencial do jogo */
 

@@ -1,61 +1,180 @@
-insertMinesweeper(Tabuleiro, NovoTabuleiro):-random(0,9,Linha),random(0,9,Coluna),
-    encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, Simbolo),
- (
- (Simbolo == ~) -> alteraValorNoTabuleiro(Tabuleiro, Linha, Coluna, n, NovoTabuleiro);
- (Simbolo == n) -> insertMinesweeper(Tabuleiro, NovoTabuleiro)
- ).
+/* Visualizacao do tabuleiro, sem mostrar os navios */
 
-gerarTabuleiro([[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~]]).
+printTrayPlayer(Tabuleiro) :-
+  write('--------- BattleShip --------'),nl,
+  write('   0  1  2  3  4  5  6  7  8'),nl,
+  printMatrixPlayer(Tabuleiro, 0),
+  write('Legenda:'),nl,
+  write('~ = Água | ^ = Atirou na água | x = Acertou o navio'), nl, nl.
 
-inserirNavios(Tabuleiro, NovoTabuleiro):-
-        inserirBattleShip(Tabuleiro, Tabuleiro2),
-	inserirCruiser(Tabuleiro2, Tabuleiro3),
-	inserirCruiser(Tabuleiro3, Tabuleiro4),
-	insertMinesweeper(Tabuleiro4, Tabuleiro5),
-	insertMinesweeper(Tabuleiro5, Tabuleiro6),
-	insertMinesweeper(Tabuleiro6, Tabuleiro7),
-	insertMinesweeper(Tabuleiro7, NovoTabuleiro).
+printMatrixPlayer([], _).
+printMatrixPlayer([H|T], Index) :-
+    write(Index), write('  '), printLinePlayer(H), nl,
+    NewIndex is Index+1,
+    printMatrixPlayer(T, NewIndex).
+
+printLinePlayer([]).
+printLinePlayer([H|T]) :-
+  (H == '~', write('~');
+  H == n, write('~');
+  H == ^, write('^');
+  H == x, write('x')), write('  '),
+  printLinePlayer(T).
+
 atirar(Tabuleiro, NovoTabuleiro) :-
   selecione,
-  inserir_numero('Linha', Linha),
-  inserir_numero('Coluna', Coluna), nl,
+  insert_number('Linha', Linha),
+  insert_number('Coluna', Coluna), nl,
   (Linha >= 0, Linha =< 8, Coluna >= 0, Coluna =< 8 ->
     encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, Simbolo),
     (
-    (Simbolo == ~) -> alteraValorNoTabuleiro(Tabuleiro, Linha, Coluna, @, NovoTabuleiro), errou, nl;
-    (Simbolo == n) -> alteraValorNoTabuleiro(Tabuleiro, Linha, Coluna, x, NovoTabuleiro), acertou, nl;
-    (Simbolo == @) -> invalido, atirar(Tabuleiro, NovoTabuleiro);
+    (Simbolo == ~) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, ^, NovoTabuleiro), errou, nl;
+    (Simbolo == n) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, x, NovoTabuleiro), acertou, nl;
+    (Simbolo == ^) -> invalido, atirar(Tabuleiro, NovoTabuleiro);
     (Simbolo == x) -> invalido, atirar(Tabuleiro, NovoTabuleiro)
     );
   selecaoInvalida, atirar(Tabuleiro, NovoTabuleiro)
   ).
 
- alteraValorNoTabuleiro([H|T], 0, Coluna, NovoValor, [J|T]) :- substituir(H, Coluna, NovoValor, J).
- alteraValorNoTabuleiro([H|T], Linha, Coluna, NovoValor, [H|U]) :-
-   Linha1 is Linha - 1, alteraValorNoTabuleiro(T, Linha1, Coluna, NovoValor, U).
+ changeValueOnBoard([H|T], 0, Coluna, NovoValor, [J|T]) :- substituir(H, Coluna, NovoValor, J).
+ changeValueOnBoard([H|T], Linha, Coluna, NovoValor, [H|U]) :-
+   Linha1 is Linha - 1, changeValueOnBoard(T, Linha1, Coluna, NovoValor, U).
+
+encontraSimboloNaMatriz(Matriz, Linha, Coluna, Simbolo) :-
+  nth0(Linha, Matriz, ListaDaPos),
+  nth0(Coluna, ListaDaPos, Simbolo).
+
+substituir([_|T], 0, X, [X|T]).
+substituir([H|T], Index, NewElement, [H|U]) :-
+  Index1 is Index - 1, substituir(T, Index1, NewElement, U).
+
+/* Verificar se um item existe na matriz */
+
+contem([X|_], X).
+contem([_|T], X) :-
+  contem(T, X).
+
+hasShips([H|_]) :- contem(H, n).
+hasShips([_|T]) :- hasShips(T).
+
+/* Inserir navios no tabuleiro */
+
+insertBattleship(Tabuleiro, NovoTabuleiro):-
+    random(0,6,Linha),random(0,6,Coluna),random(0,2,Orientacao),
+    encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, _),Coluna2 is Coluna+1,Coluna3 is Coluna+2,Coluna4 is Coluna+3, Linha2 is Linha+1,Linha3 is Linha+2,Linha4 is Linha+3,
+ (
+ (Orientacao == 0) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, n, Tabuleiro2),changeValueOnBoard(Tabuleiro2, Linha, Coluna2, n, Tabuleiro3),changeValueOnBoard(Tabuleiro3, Linha, Coluna3, n, Tabuleiro4),changeValueOnBoard(Tabuleiro4, Linha, Coluna4, n, NovoTabuleiro);
+ (Orientacao == 1) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, n, Tabuleiro2),changeValueOnBoard(Tabuleiro2, Linha2, Coluna, n, Tabuleiro3),changeValueOnBoard(Tabuleiro3, Linha3, Coluna, n, Tabuleiro4),changeValueOnBoard(Tabuleiro4, Linha4, Coluna, n, NovoTabuleiro)
+
+ ).
+
+insertCruiser(Tabuleiro, NovoTabuleiro):-
+    random(0,8,Linha),random(0,8,Coluna),random(0,2,Orientacao),
+    encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, Simbolo),Coluna2 is Coluna+1, Linha2 is Linha+1, encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna2, Simbolo2),encontraSimboloNaMatriz(Tabuleiro, Linha2, Coluna, Simbolo3),
+ (
+ (Simbolo == ~), (Simbolo2 == ~), (Orientacao == 0) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, n, Tabuleiro2),changeValueOnBoard(Tabuleiro2, Linha, Coluna2, n, NovoTabuleiro);
+ (Simbolo == ~), (Simbolo3 == ~), (Orientacao == 1) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, n, Tabuleiro2),changeValueOnBoard(Tabuleiro2, Linha2, Coluna, n, NovoTabuleiro);
+ (Orientacao == 0),((Simbolo == n);(Simbolo2 == n))-> insertCruiser(Tabuleiro, NovoTabuleiro);
+ (Orientacao == 1),((Simbolo == n);(Simbolo3 == n))-> insertCruiser(Tabuleiro, NovoTabuleiro)
+
+ ).
+
+insertMinesweeper(Tabuleiro, NovoTabuleiro):-random(0,9,Linha),random(0,9,Coluna),
+    encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, Simbolo),
+ (
+ (Simbolo == ~) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, n, NovoTabuleiro);
+ (Simbolo == n) -> insertMinesweeper(Tabuleiro, NovoTabuleiro)
+ ).
+
+generateTray([[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~]]).
+
+insertShips(Tabuleiro, NovoTabuleiro):-
+    insertBattleship(Tabuleiro, Tabuleiro2),
+	insertCruiser(Tabuleiro2, Tabuleiro3),
+	insertCruiser(Tabuleiro3, Tabuleiro4),
+	insertMinesweeper(Tabuleiro4, Tabuleiro5),
+	insertMinesweeper(Tabuleiro5, Tabuleiro6),
+	insertMinesweeper(Tabuleiro6, Tabuleiro7),
+	insertMinesweeper(Tabuleiro7, NovoTabuleiro).
+
 
 /* Execução da lógica sequencial do jogo */
 
 play(Tabuleiro, Misseis) :-
   Misseis > 0,
-  imprimeTabuleiroJogador(Tabuleiro),
+  printTrayPlayer(Tabuleiro),
   atirar(Tabuleiro, NovoTabuleiro), NovosMisseis is Misseis-1,
   (
-  not( existemNavios(NovoTabuleiro) ) -> imprimeTabuleiroReal(NovoTabuleiro), vitoria;
- (NovosMisseis > 1 -> misseis(NovosMisseis), jogar(NovoTabuleiro, NovosMisseis);
-  NovosMisseis =:= 1 -> ultimoMissel, jogar(NovoTabuleiro, NovosMisseis);
+  not( hasShips(NovoTabuleiro) ) -> imprimeTabuleiroReal(NovoTabuleiro), vitoria;
+  (NovosMisseis > 1 -> misseis(NovosMisseis), play(NovoTabuleiro, NovosMisseis);
+  NovosMisseis =:= 1 -> ultimoMissel, play(NovoTabuleiro, NovosMisseis);
   NovosMisseis =:= 0 -> misseisEsgotados, imprimeTabuleiroReal(NovoTabuleiro), gameOver)
   ).
 
-/* Execução do programa */
+/* Visualizacao do tabuleiro exibindo os navios */
+
+imprimeTabuleiroReal(Tabuleiro) :-
+  write('---------  TABULEIRO REAL  ---------'),nl,nl,
+  write('   0   1   2   3   4   5   6   7   8'),nl,nl,
+  printLines(Tabuleiro, 0),
+  write('Legenda:'),nl,
+  write('~ = Água | n = NAVIO | ^ = Atirou na água | x = Acertou o navio'), nl, nl.
+
+printLines([], _).
+printLines([H|T], Index) :-
+  write(Index), write('  '), imprimeLinha(H), nl,nl,
+  NewIndex is Index+1,
+  printLines(T, NewIndex).
+
+imprimeLinha([]).
+imprimeLinha([H|T]) :-
+  write(H), write('   '),
+  imprimeLinha(T).
+
+/* Impressões simples */
+
+acertou :-
+  write('Acertou!'), nl.
+
+errou :-
+  write('Errou!'), nl.
+
+invalido :-
+  write('Você já atirou aqui!.'), nl.
+
+selecione :-
+  write('Selecione as coordenadas de onde deseja atirar.'), nl.
+
+selecaoInvalida :-
+  write('Coordenadas inválidas. Coloque uma diferente.'), nl.
+
+misseis(Qtd) :-
+  write('Você ainda tem '), write(Qtd), write(' mísseis.'), nl, nl.
+
+ultimoMissel :-
+  write('Resta apenas um míssel!'), nl, nl.
+
+misseisEsgotados :-
+  write('Seus mísseis acabaram!'), nl, nl.
+
+gameOver :-
+  nl,
+  write('Fim de jogo! Seus mísseis acabaram e você não conseguiu afundar todos os navios =/.').
+
+vitoria :-
+  nl,
+  write('Você destruiu todos os navios e conseguiu vencer a Batalha Naval!!').
+
+/* Imprime uma mensagem na tela e lê um número da entrada */
+insert_number(Prompt, Numero) :-
+  write(Prompt),
+  write(': '),
+  read(Numero).
+
 :- initialization(main).
 main :-
-   write("Digite a quantidade de tiros que deseja ter: "),
-   read(N),
-   gerarTabuleiro(TabuleiroRamdomicoAux),
-   inserirNavios(TabuleiroRamdomicoAux, TabuleiroRamdomico),
-   play(TabuleiroRamdomico, N).
-
-
-
-
+  write("Digite a quantidade de tiros que deseja ter: "),
+  read(N),
+  generateTray(TabuleiroRamdomicoAux),
+  insertShips(TabuleiroRamdomicoAux, TabuleiroRamdomico),
+  play(TabuleiroRamdomico, N).

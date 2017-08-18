@@ -1,4 +1,4 @@
-/* Visualizacao do tabuleiro, sem mostrar os navios */
+/* Visualization of battleship matrix with hidden ships */
 
 printTrayPlayer(Tabuleiro) :-
   write('--------- BattleShip --------'),nl,
@@ -48,7 +48,7 @@ substituir([_|T], 0, X, [X|T]).
 substituir([H|T], Index, NewElement, [H|U]) :-
   Index1 is Index - 1, substituir(T, Index1, NewElement, U).
 
-/* Verificar se um item existe na matriz */
+/* Checks if some ship stay on the matrix*/
 
 contem([X|_], X).
 contem([_|T], X) :-
@@ -57,7 +57,7 @@ contem([_|T], X) :-
 hasShips([H|_]) :- contem(H, n).
 hasShips([_|T]) :- hasShips(T).
 
-/* Inserir navios no tabuleiro */
+/* Insert ships on the tray */
 
 insertBattleship(Tabuleiro, NovoTabuleiro):-
     random(0,6,Linha),random(0,6,Coluna),random(0,2,Orientacao),
@@ -86,7 +86,15 @@ insertMinesweeper(Tabuleiro, NovoTabuleiro):-random(0,9,Linha),random(0,9,Coluna
  (Simbolo == n) -> insertMinesweeper(Tabuleiro, NovoTabuleiro)
  ).
 
-generateTray([[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~],[~,~,~,~,~,~,~,~,~]]).
+generateTray([[~,~,~,~,~,~,~,~,~],
+              [~,~,~,~,~,~,~,~,~],
+              [~,~,~,~,~,~,~,~,~],
+              [~,~,~,~,~,~,~,~,~],
+              [~,~,~,~,~,~,~,~,~],
+              [~,~,~,~,~,~,~,~,~],
+              [~,~,~,~,~,~,~,~,~],
+              [~,~,~,~,~,~,~,~,~],
+              [~,~,~,~,~,~,~,~,~]]).
 
 insertShips(Tabuleiro, NovoTabuleiro):-
     insertBattleship(Tabuleiro, Tabuleiro2),
@@ -97,9 +105,6 @@ insertShips(Tabuleiro, NovoTabuleiro):-
 	insertMinesweeper(Tabuleiro6, Tabuleiro7),
 	insertMinesweeper(Tabuleiro7, NovoTabuleiro).
 
-
-/* Execução da lógica sequencial do jogo */
-
 play(Tabuleiro, Misseis) :-
   Misseis > 0,
   printTrayPlayer(Tabuleiro),
@@ -108,13 +113,13 @@ play(Tabuleiro, Misseis) :-
   not( hasShips(NovoTabuleiro) ) -> imprimeTabuleiroReal(NovoTabuleiro), vitoria;
   (NovosMisseis > 1 -> misseis(NovosMisseis), play(NovoTabuleiro, NovosMisseis);
   NovosMisseis =:= 1 -> ultimoMissel, play(NovoTabuleiro, NovosMisseis);
-  NovosMisseis =:= 0 -> misseisEsgotados, imprimeTabuleiroReal(NovoTabuleiro), gameOver)
+  NovosMisseis =:= 0 -> misseisEsgotados, gameOver)
   ).
 
-/* Visualizacao do tabuleiro exibindo os navios */
+/*imprimeTabuleiroReal(NovoTabuleiro), */
 
 imprimeTabuleiroReal(Tabuleiro) :-
-  write('---------  TABULEIRO REAL  ---------'),nl,nl,
+  write('---------  Battleship Real  --------'),nl,nl,
   write('   0   1   2   3   4   5   6   7   8'),nl,nl,
   printLines(Tabuleiro, 0),
   write('Legenda:'),nl,
@@ -130,8 +135,6 @@ imprimeLinha([]).
 imprimeLinha([H|T]) :-
   write(H), write('   '),
   imprimeLinha(T).
-
-/* Impressões simples */
 
 acertou :-
   write('Acertou!'), nl.
@@ -155,17 +158,16 @@ ultimoMissel :-
   write('Resta apenas um míssel!'), nl, nl.
 
 misseisEsgotados :-
-  write('Seus mísseis acabaram!'), nl, nl.
+  write('Seus mísseis acabaram!'),nl.
 
 gameOver :-
   nl,
-  write('Fim de jogo! Seus mísseis acabaram e você não conseguiu afundar todos os navios =/.').
+  write('You Lose!'),nl,nl.
 
 vitoria :-
   nl,
-  write('Você destruiu todos os navios e conseguiu vencer a Batalha Naval!!').
+  write('You Win!').
 
-/* Imprime uma mensagem na tela e lê um número da entrada */
 insert_number(Prompt, Numero) :-
   write(Prompt),
   write(': '),

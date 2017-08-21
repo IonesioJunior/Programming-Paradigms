@@ -1,19 +1,14 @@
 /* Visualization of battleship matrix with hidden ships */
 
-showMenu(Map) :-
-  write('  ===== Battle Ship ======\n\n'),
-  printMatrixPlayer(Map, 0),
-  write('1 - BattleShip\n - Cruiser\n - Minesweeper\n - Erro\n').
-
-printTrayPlayer(Map) :-
-  write('  ===== Battle Ship ======\n\n'),
-  printMatrixPlayer(Map, 0).
-
-printMatrixPlayer([], _).
-printMatrixPlayer([H|T], Index) :-
-    write('  '), printLinePlayer(H), nl,
-    NewIndex is Index+1,
-    printMatrixPlayer(T, NewIndex).
+buildMat([[0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0]]).
 
 printLinePlayer([]).
 printLinePlayer([H|T]) :-  (H == 0,
@@ -35,15 +30,38 @@ printLinePlayer([H|T]) :-  (H == 0,
 					write('  '),
   			printLinePlayer(T).
 
-
-
 shoot(Matrix, newMatrix) :-  write('\n Onde deseja atirar? \n'),
   				insert_number('X Coord : ', X), insert_number('Y Coord : ', Y), nl,
   						(X >= 0, X =< 8, Y >= 0, Y =< 8 ->  findSymbol(Matrix, X, Y, Symbol),(
-    (Symbol == 0) -> changeValueOnBoard(Matrix, X, Y, x, newMatrix), write("Errou!!\n\n");(Symbol == 1) -> changeValueOnBoard(Matrix, X, Y, '1', newMatrix), write("Acertou!!\n\n");
-    (Symbol == 2) -> changeValueOnBoard(Matrix, X, Y, '2', newMatrix), write("Acertou!!\n\n");(Symbol == 3) -> changeValueOnBoard(Matrix, X, Y, '3', newMatrix), write("Acertou!!\n\n");
+    (Symbol == 0) -> changeValueOnBoard(Matrix, X, Y, x, newMatrix), write("Miss!!\n");(Symbol == 1) -> changeValueOnBoard(Matrix, X, Y, '1', newMatrix), write("Acertou!!\n\n");
+    (Symbol == 2) -> changeValueOnBoard(Matrix, X, Y, '2', newMatrix), write("Hit!!\n");(Symbol == 3) -> changeValueOnBoard(Matrix, X, Y, '3', newMatrix), write("Acertou!!\n\n");
     (Symbol == x) -> shoot(Matrix, newMatrix));
   				write('Wrong Coord\n'), shoot(Matrix, newMatrix)).
+
+
+play(Matrix, shots) :- shots > 0,
+  		       shoot(Matrix, newMatrix), newShots is shots-1,
+  		       printTrayPlayer(newMatrix),( not( hasShips( newMatrix ) ) -> write('\nYou Win!!\n');
+  		       (newShots > 1 ->  play(newMatrix, newShots);
+  		       newShots =:= 1 -> play(newMatrix, newShots);
+  		       newShots =:= 0 -> showRealMap(newMatrix), write('\nYou Lose!\n\n'))).
+showMenu(Map) :-
+  write('  ===== Battle Ship ======\n\n'),
+  printMatrixPlayer(Map, 0),
+  write('1 - BattleShip\n - Cruiser\n - Minesweeper\n - Erro\n').
+
+printTrayPlayer(Map) :-
+  write('  ===== Battle Ship ======\n\n'),
+  printMatrixPlayer(Map, 0).
+
+printMatrixPlayer([], _).
+printMatrixPlayer([H|T], Index) :-
+    write('  '), printLinePlayer(H), nl,
+    NewIndex is Index+1,
+    printMatrixPlayer(T, NewIndex).
+
+
+
 
 
 
@@ -98,15 +116,7 @@ insertMinesweeper(Matrix, newMatrix):- random(0,9,X),random(0,9,Y),
     				       findSymbol(Matrix, X, Y, Symbol),((Symbol == 0) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, 3, NovoTabuleiro);
  				       (Symbol \= 0) -> insertMinesweeper(Matrix, newMatrix)).
 
-buildMat([[0,0,0,0,0,0,0,0,0],
-	  [0,0,0,0,0,0,0,0,0],
-	  [0,0,0,0,0,0,0,0,0],
-	  [0,0,0,0,0,0,0,0,0],
-	  [0,0,0,0,0,0,0,0,0],
-	  [0,0,0,0,0,0,0,0,0],
-	  [0,0,0,0,0,0,0,0,0],
-	  [0,0,0,0,0,0,0,0,0],
-	  [0,0,0,0,0,0,0,0,0]]).
+
 
 insertShips(Matrix, newMatrix):-  insertBattleship(Matrix, Matrix2),
 				  insertCruiser(Matrix2, Matrix3),
@@ -116,12 +126,7 @@ insertShips(Matrix, newMatrix):-  insertBattleship(Matrix, Matrix2),
 				  insertMinesweeper(Matrix6, Matrix7),
 				  insertMinesweeper(Matrix7, newMatrix).
 
-play(Matrix, shots) :- shots > 0,
-  		       shoot(Matrix, newMatrix), newShots is shots-1,
-  		       printTrayPlayer(newMatrix),( not( hasShips( newMatrix ) ) -> write('\nYou Win!!\n');
-  		       (newShots > 1 ->  play(newMatrix, newShots);
-  		       newShots =:= 1 -> play(newMatrix, newShots);
-  		       newShots =:= 0 -> showRealMap(newMatrix), write('\nYou Lose!\n\n'))).
+
 
 
 showRealMap(Tabuleiro) :-

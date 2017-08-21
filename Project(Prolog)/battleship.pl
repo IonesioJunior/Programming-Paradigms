@@ -30,21 +30,21 @@ printLinePlayer([H|T]) :-  (H == 0,
 					write('  '),
   			printLinePlayer(T).
 
-shoot(Matrix, newMatrix) :-  write('\n Onde deseja atirar? \n'),
+shoot(Matrix, NewMatrix) :-  write('\n Onde deseja atirar? \n'),
   				insert_number('X Coord : ', X), insert_number('Y Coord : ', Y), nl,
   						(X >= 0, X =< 8, Y >= 0, Y =< 8 ->  findSymbol(Matrix, X, Y, Symbol),(
-    (Symbol == 0) -> changeValueOnBoard(Matrix, X, Y, x, newMatrix), write("Miss!!\n");(Symbol == 1) -> changeValueOnBoard(Matrix, X, Y, '1', newMatrix), write("Acertou!!\n\n");
-    (Symbol == 2) -> changeValueOnBoard(Matrix, X, Y, '2', newMatrix), write("Hit!!\n");(Symbol == 3) -> changeValueOnBoard(Matrix, X, Y, '3', newMatrix), write("Acertou!!\n\n");
-    (Symbol == x) -> shoot(Matrix, newMatrix));
-  				write('Wrong Coord\n'), shoot(Matrix, newMatrix)).
+    (Symbol == 0) -> changeValueOnBoard(Matrix, X, Y, x, NewMatrix), write("Miss!!\n");(Symbol == 1) -> changeValueOnBoard(Matrix, X, Y, '1', NewMatrix), write("Acertou!!\n\n");
+    (Symbol == 2) -> changeValueOnBoard(Matrix, X, Y, '2', NewMatrix), write("Hit!!\n");(Symbol == 3) -> changeValueOnBoard(Matrix, X, Y, '3', NewMatrix), write("Acertou!!\n\n");
+    (Symbol == x) -> shoot(Matrix, NewMatrix));
+  				write('Wrong Coord\n'), shoot(Matrix, NewMatrix)).
 
 
-play(Matrix, shots) :- shots > 0,
-  		       shoot(Matrix, newMatrix), newShots is shots-1,
-  		       printTrayPlayer(newMatrix),( not( hasShips( newMatrix ) ) -> write('\nYou Win!!\n');
-  		       (newShots > 1 ->  play(newMatrix, newShots);
-  		       newShots =:= 1 -> play(newMatrix, newShots);
-  		       newShots =:= 0 -> showRealMap(newMatrix), write('\nYou Lose!\n\n'))).
+play(Matrix, Shots) :- Shots > 0,
+  		       shoot(Matrix, NewMatrix), NewShots is Shots-1,
+  		       printTrayPlayer(NewMatrix),( not( hasShips( NewMatrix ) ) -> write('\nYou Win!!\n');
+  		       (newShots > 1 ->  play(NewMatrix, NewShots);
+  		       newShots =:= 1 -> play(NewMatrix, NewShots);
+  		       newShots =:= 0 -> showRealMap(NewMatrix), write('\nYou Lose!\n\n'))).
 showMenu(Map) :-
   write('  ===== Battle Ship ======\n\n'),
   printMatrixPlayer(Map, 0),
@@ -65,8 +65,8 @@ printMatrixPlayer([H|T], Index) :-
 
 
 
-changeValueOnBoard([H|T], 0, Y, value, [J|T]) :- replace(H, Y, value, J).
-changeValueOnBoard([H|T], X, Y, value, [H|U]) :- X1 is X - 1, changeValueOnBoard(T, X1, Y, value, U).
+changeValueOnBoard([H|T], 0, Y, Value, [J|T]) :- replace(H, Y, Value, J).
+changeValueOnBoard([H|T], X, Y, Value, [H|U]) :- X1 is X - 1, changeValueOnBoard(T, X1, Y, Value, U).
 
 findSymbol(Matrix, X, Y, Symbol) :-nth0(X, Matrix, Pos),nth0(Y, Pos, Symbol).
 
@@ -89,7 +89,7 @@ hasShips([_|T]) :- hasShips(T).
 
 /* Insert ships on the tray */
 
-insertBattleship(Matrix, newMatrix):- random(0,6,X),random(0,6,Y),
+insertBattleship(Matrix, NewMatrix):- random(0,6,X),random(0,6,Y),
     				      findSymbol(Matrix, X, Y, _), 
 				      			Y2 is Y+1,
 							Y3 is Y+2,
@@ -103,28 +103,28 @@ insertBattleship(Matrix, newMatrix):- random(0,6,X),random(0,6,Y),
 							changeValueOnBoard(Matrix4, X, Y4, 1, Matrix).
 
 
-insertCruiser(Matrix, newMatrix):- random(0,8,X),random(0,8,Y),
+insertCruiser(Matrix, NewMatrix):- random(0,8,X),random(0,8,Y),
     				   findSymbol(Matrix, X, Y, Symbol),
 				   			Y2 is Y+1, 
 							X2 is X+1,
 				   findSymbol(Matrix, X, Y2, Symbol2),
 				   findSymbol(Matrix, X2, Y, Symbol3),((Symbol == 0), (Symbol2 == 0) -> changeValueOnBoard(Matrix, X, Y, 2, Matrix2),
-				   changeValueOnBoard(Matrix2, X, Y2, 2, newMatrix);
- 							((Symbol \= 0);(Symbol2 \= 0))-> insertCruiser(Tabuleiro, NovoTabuleiro)).
+				   changeValueOnBoard(Matrix2, X, Y2, 2, NewMatrix);
+ 							((Symbol \= 0);(Symbol2 \= 0))-> insertCruiser(Matrix, NewMatrix)).
 
-insertMinesweeper(Matrix, newMatrix):- random(0,9,X),random(0,9,Y),
-    				       findSymbol(Matrix, X, Y, Symbol),((Symbol == 0) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, 3, NovoTabuleiro);
- 				       (Symbol \= 0) -> insertMinesweeper(Matrix, newMatrix)).
+insertMinesweeper(Matrix, NewMatrix):- random(0,9,X),random(0,9,Y),
+    				       findSymbol(Matrix, X, Y, Symbol),((Symbol == 0) -> changeValueOnBoard(Matrix, X, Y, 3, NewMatrix);
+ 				       (Symbol \= 0) -> insertMinesweeper(Matrix, NewMatrix)).
 
 
 
-insertShips(Matrix, newMatrix):-  insertBattleship(Matrix, Matrix2),
+insertShips(Matrix, NewMatrix):-  insertBattleship(Matrix, Matrix2),
 				  insertCruiser(Matrix2, Matrix3),
 				  insertCruiser(Matrix3, Matrix4),
 				  insertMinesweeper(Matrix4, Matrix5),
 				  insertMinesweeper(Matrix5, Matrix6),
 				  insertMinesweeper(Matrix6, Matrix7),
-				  insertMinesweeper(Matrix7, newMatrix).
+				  insertMinesweeper(Matrix7, NewMatrix).
 
 
 

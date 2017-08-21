@@ -42,9 +42,9 @@ shoot(Matrix, NewMatrix) :-  write('\n Onde deseja atirar? \n'),
 play(Matrix, Shots) :- Shots > 0,
   		       shoot(Matrix, NewMatrix), NewShots is Shots-1,
   		       printTrayPlayer(NewMatrix),( not( hasShips( NewMatrix ) ) -> write('\nYou Win!!\n');
-  		       (newShots > 1 ->  play(NewMatrix, NewShots);
-  		       newShots =:= 1 -> play(NewMatrix, NewShots);
-  		       newShots =:= 0 -> showRealMap(NewMatrix), write('\nYou Lose!\n\n'))).
+  		       (NewShots > 1 ->  play(NewMatrix, NewShots);
+  		       NewShots =:= 1 -> play(NewMatrix, NewShots);
+  		       NewShots =:= 0 -> showRealMap(NewMatrix), write('\nYou Lose!\n\n'))).
 showMenu(Map) :-
   write('  ===== Battle Ship ======\n\n'),
   printMatrixPlayer(Map, 0),

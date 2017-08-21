@@ -1,12 +1,12 @@
 /* Visualization of battleship matrix with hidden ships */
 
 showMenu(Map) :-
-  write('  ===== Batalha Naval ======\n\n'),
+  write('  ===== Battle Ship ======\n\n'),
   printMatrixPlayer(Map, 0),
-  write('1 - BattleShip\n2 - Cruiser\n3 - Minesweeper \nx - Erro\n\n').
+  write('1 - BattleShip\n - Cruiser\n - Minesweeper\n - Erro\n').
 
 printTrayPlayer(Map) :-
-  write('  ===== Batalha Naval ======\n\n'),
+  write('  ===== Battle Ship ======\n\n'),
   printMatrixPlayer(Map, 0).
 
 printMatrixPlayer([], _).
@@ -16,103 +16,112 @@ printMatrixPlayer([H|T], Index) :-
     printMatrixPlayer(T, NewIndex).
 
 printLinePlayer([]).
-printLinePlayer([H|T]) :-
-  (H == 0, write('~');
-  H == 1, write('~');
-  H == 2, write('~');
-  H == 3, write('~');
-  H == '1', write('1');
-  H == '2', write('2');
-  H == '3', write('3');
-  H == x, write('x')), write('  '),
-  printLinePlayer(T).
+printLinePlayer([H|T]) :-  (H == 0,
+				write('~');
+  			    H == 1,
+			    	write('~');
+  			    H == 2,
+			    	write('~');
+  			    H == 3,
+			    	write('~');
+  			    H == '1',
+			    	write('1');
+  			    H == '2',
+			    	write('2');
+  			    H == '3',
+			    	write('3');
+  			    H == x,
+			    	write('x')),
+					write('  '),
+  			printLinePlayer(T).
 
-shoot(Tabuleiro, NovoTabuleiro) :-
-  write('\n Onde deseja atirar? \n'),
-  insert_number('Linha', Linha),
-  insert_number('Coluna', Coluna), nl,
-  (Linha >= 0, Linha =< 8, Coluna >= 0, Coluna =< 8 ->
-    encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, Simbolo),
-    (
-    (Simbolo == 0) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, x, NovoTabuleiro), write("Errou!!\n\n");
-    (Simbolo == 1) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, '1', NovoTabuleiro), write("Acertou!!\n\n");
-    (Simbolo == 2) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, '2', NovoTabuleiro), write("Acertou!!\n\n");
-    (Simbolo == 3) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, '3', NovoTabuleiro), write("Acertou!!\n\n");
-    (Simbolo == x) -> shoot(Tabuleiro, NovoTabuleiro)
-    );
-  write('Coordenadas Inválidas\n'), atirar(Tabuleiro, NovoTabuleiro)
-  ).
 
-changeValueOnBoard([H|T], 0, Coluna, NovoValor, [J|T]) :- substituir(H, Coluna, NovoValor, J).
- changeValueOnBoard([H|T], Linha, Coluna, NovoValor, [H|U]) :-
-   Linha1 is Linha - 1, changeValueOnBoard(T, Linha1, Coluna, NovoValor, U).
 
-encontraSimboloNaMatriz(Matriz, Linha, Coluna, Simbolo) :-
-  nth0(Linha, Matriz, ListaDaPos),
-  nth0(Coluna, ListaDaPos, Simbolo).
+shoot(Matrix, newMatrix) :-  write('\n Onde deseja atirar? \n'),
+  				insert_number('X Coord : ', X), insert_number('Y Coord : ', Y), nl,
+  						(X >= 0, X =< 8, Y >= 0, Y =< 8 ->  findSymbol(Matrix, X, Y, Symbol),(
+    (Symbol == 0) -> changeValueOnBoard(Matrix, X, Y, x, newMatrix), write("Errou!!\n\n");(Symbol == 1) -> changeValueOnBoard(Matrix, X, Y, '1', newMatrix), write("Acertou!!\n\n");
+    (Symbol == 2) -> changeValueOnBoard(Matrix, X, Y, '2', newMatrix), write("Acertou!!\n\n");(Symbol == 3) -> changeValueOnBoard(Matrix, X, Y, '3', newMatrix), write("Acertou!!\n\n");
+    (Symbol == x) -> shoot(Matrix, newMatrix));
+  				write('Wrong Coord\n'), shoot(Matrix, newMatrix)).
 
-substituir([_|T], 0, X, [X|T]).
-substituir([H|T], Index, NewElement, [H|U]) :-
-  Index1 is Index - 1, substituir(T, Index1, NewElement, U).
+
+
+changeValueOnBoard([H|T], 0, Y, value, [J|T]) :- replace(H, Y, value, J).
+changeValueOnBoard([H|T], X, Y, value, [H|U]) :- X1 is X - 1, changeValueOnBoard(T, X1, Y, value, U).
+
+findSymbol(Matrix, X, Y, Symbol) :-nth0(X, Matrix, Pos),nth0(Y, Pos, Symbol).
+
+replace([_|T], 0, X, [X|T]).
+replace([H|T], Index, NewElement, [H|U]) :- Index1 is Index - 1, replace(T, Index1, NewElement, U).
 
 /* Checks if some ship stay on the matrix*/
 
-contem([X|_], X).
-contem([_|T], X) :-
-  contem(T, X).
+containsElement([X|_], X).
+containsElement([_|T], X) :- containsElement(T, X).
 
-hasShips([H|_]) :- contem(H, 1).
+hasShips([H|_]) :- containsElement(H, 1).
 hasShips([_|T]) :- hasShips(T).
 
-hasShips([H|_]) :- contem(H, 2).
+hasShips([H|_]) :- containsElement(H, 2).
 hasShips([_|T]) :- hasShips(T).
 
-hasShips([H|_]) :- contem(H, 3).
+hasShips([H|_]) :- containsElement(H, 3).
 hasShips([_|T]) :- hasShips(T).
+
 /* Insert ships on the tray */
 
-insertBattleship(Tabuleiro, NovoTabuleiro):-
-    random(0,6,Linha),random(0,6,Coluna),
-    encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, _),Coluna2 is Coluna+1,Coluna3 is Coluna+2,Coluna4 is Coluna+3, Linha2 is Linha+1,Linha3 is Linha+2,Linha4 is Linha+3,
-    changeValueOnBoard(Tabuleiro, Linha, Coluna, 1, Tabuleiro2),changeValueOnBoard(Tabuleiro2, Linha, Coluna2, 1, Tabuleiro3),changeValueOnBoard(Tabuleiro3, Linha, Coluna3, 1, Tabuleiro4),changeValueOnBoard(Tabuleiro4, Linha, Coluna4, 1, NovoTabuleiro).
+insertBattleship(Matrix, newMatrix):- random(0,6,X),random(0,6,Y),
+    				      findSymbol(Matrix, X, Y, _), 
+				      			Y2 is Y+1,
+							Y3 is Y+2,
+							Y4 is Y+3, 
+							X2 is X+1,
+							X3 is X+2,
+							X4 is X+3,
+    				      			changeValueOnBoard(Matrix, X, Y, 1, Matrix2),
+				      			changeValueOnBoard(Matrix2, X, Y2, 1, Matrix3),
+							changeValueOnBoard(Matrix3, X, Y3, 1, Matrix4),
+							changeValueOnBoard(Matrix4, X, Y4, 1, Matrix).
 
 
-insertCruiser(Tabuleiro, NovoTabuleiro):-
-    random(0,8,Linha),random(0,8,Coluna),
-    encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, Simbolo),Coluna2 is Coluna+1, Linha2 is Linha+1, encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna2, Simbolo2),encontraSimboloNaMatriz(Tabuleiro, Linha2, Coluna, Simbolo3),
- (
- (Simbolo == 0), (Simbolo2 == 0) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, 2, Tabuleiro2),changeValueOnBoard(Tabuleiro2, Linha, Coluna2, 2, NovoTabuleiro);
- ((Simbolo \= 0);(Simbolo2 \= 0))-> insertCruiser(Tabuleiro, NovoTabuleiro)
- ).
+insertCruiser(Matrix, newMatrix):- random(0,8,X),random(0,8,Y),
+    				   findSymbol(Matrix, X, Y, Symbol),
+				   			Y2 is Y+1, 
+							X2 is X+1,
+				   findSymbol(Matrix, X, Y2, Symbol2),
+				   findSymbol(Matrix, X2, Y, Symbol3),((Symbol == 0), (Symbol2 == 0) -> changeValueOnBoard(Matrix, X, Y, 2, Matrix2),
+				   changeValueOnBoard(Matrix2, X, Y2, 2, newMatrix);
+ 							((Symbol \= 0);(Symbol2 \= 0))-> insertCruiser(Tabuleiro, NovoTabuleiro)).
 
-insertMinesweeper(Tabuleiro, NovoTabuleiro):-random(0,9,Linha),random(0,9,Coluna),
-    encontraSimboloNaMatriz(Tabuleiro, Linha, Coluna, Simbolo),
- (
- (Simbolo == 0) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, 3, NovoTabuleiro);
- (Simbolo \= 0) -> insertMinesweeper(Tabuleiro, NovoTabuleiro)
- ).
+insertMinesweeper(Matrix, newMatrix):- random(0,9,X),random(0,9,Y),
+    				       findSymbol(Matrix, X, Y, Symbol),((Symbol == 0) -> changeValueOnBoard(Tabuleiro, Linha, Coluna, 3, NovoTabuleiro);
+ 				       (Symbol \= 0) -> insertMinesweeper(Matrix, newMatrix)).
 
-buildMat([[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0]]).
+buildMat([[0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0],
+	  [0,0,0,0,0,0,0,0,0]]).
 
-insertShips(Tabuleiro, NovoTabuleiro):-
-  insertBattleship(Tabuleiro, Tabuleiro2),
-	insertCruiser(Tabuleiro2, Tabuleiro3),
-	insertCruiser(Tabuleiro3, Tabuleiro4),
-	insertMinesweeper(Tabuleiro4, Tabuleiro5),
-	insertMinesweeper(Tabuleiro5, Tabuleiro6),
-	insertMinesweeper(Tabuleiro6, Tabuleiro7),
-	insertMinesweeper(Tabuleiro7, NovoTabuleiro).
+insertShips(Matrix, newMatrix):-  insertBattleship(Matrix, Matrix2),
+				  insertCruiser(Matrix2, Matrix3),
+				  insertCruiser(Matrix3, Matrix4),
+				  insertMinesweeper(Matrix4, Matrix5),
+				  insertMinesweeper(Matrix5, Matrix6),
+				  insertMinesweeper(Matrix6, Matrix7),
+				  insertMinesweeper(Matrix7, newMatrix).
 
-play(Tabuleiro, Misseis) :-
-  Misseis > 0,
-  shoot(Tabuleiro, NovoTabuleiro), NovosMisseis is Misseis-1,
-  printTrayPlayer(NovoTabuleiro),
-  (
-  not( hasShips(NovoTabuleiro) ) -> write('\nYou Win!!\n');
-  (NovosMisseis > 1 ->  play(NovoTabuleiro, NovosMisseis);
-  NovosMisseis =:= 1 -> play(NovoTabuleiro, NovosMisseis);
-  NovosMisseis =:= 0 -> showRealMap(NovoTabuleiro), write('\nYou Lose!\n\n'))
-  ).
+play(Matrix, shots) :- shots > 0,
+  		       shoot(Matrix, newMatrix), newShots is shots-1,
+  		       printTrayPlayer(newMatrix),( not( hasShips( newMatrix ) ) -> write('\nYou Win!!\n');
+  		       (newShots > 1 ->  play(newMatrix, newShots);
+  		       newShots =:= 1 -> play(newMatrix, newShots);
+  		       newShots =:= 0 -> showRealMap(newMatrix), write('\nYou Lose!\n\n'))).
 
 
 showRealMap(Tabuleiro) :-
@@ -120,20 +129,16 @@ showRealMap(Tabuleiro) :-
     printLines(Tabuleiro, 0).
 
 printLines([], _).
-  printLines([H|T], Index) :-
-    write('  '), imprimeLinha(H), nl,
-    NewIndex is Index+1,
-    printLines(T, NewIndex).
+printLines([H|T], Index) :- write('  '), printLine(H), nl,
+    						NewIndex is Index+1,
+    						printLines(T, NewIndex).
 
-imprimeLinha([]).
-  imprimeLinha([H|T]) :-
-    write(H), write('  '),
-    imprimeLinha(T).
+printLine([]).
+printLine([H|T]) :- write(H), write('  '), printLine(T).
 
-insert_number(Prompt, Numero) :-
-  write(Prompt),
-  write(': '),
-  read(Numero).
+insert_number(Prompt, Number) :- write(Prompt),
+  				 write(': '),
+  				 read(Number).
 
 :- initialization(main).
 main :-

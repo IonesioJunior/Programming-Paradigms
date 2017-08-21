@@ -129,9 +129,9 @@ insertShips(Matrix, NewMatrix):-  insertBattleship(Matrix, Matrix2),
 
 
 
-showRealMap(Tabuleiro) :-
+showRealMap(Matrix) :-
     write('\n\n  ======= Real Map ========\n\n'),
-    printLines(Tabuleiro, 0).
+    printLines(Matrix, 0).
 
 printLines([], _).
 printLines([H|T], Index) :- write('  '), printLine(H), nl,
